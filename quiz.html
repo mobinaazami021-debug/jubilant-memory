@@ -1,0 +1,637 @@
+/* ==== مرحله 2: کد کامل JS برای آزمون 59 سوالی ==== */
+/* جایگذاری: قرار بده داخل <script> ... </script> در quiz.html یا در یک فایل جدا و آن را وارد کن */
+
+(() => {
+  // اگر خواستی از تصویری که آپلود کردی استفاده کنی (مسیر محلی):
+  const uploadedFileLocalPath = '/mnt/data/2025-11-25T06-33-31.802Z.jpg'; // فقط نمونه مسیر که گفتی تبدیلش می‌کنید
+
+  // ==== بانک سوالات (۵۹ سوال) ====
+  // هر سوال: { q: "متن", o: ["الف","ب","ج","د"], a: index (0-based), expl: "توضیح" }
+  const QUESTIONS = [
+    {q:"اگر جسم در پایان حرکت دقیقاً به نقطهٔ شروع برگردد، جابه‌جایی آن چه می‌شود؟",
+     o:["بیشتر از مسافت","برابر مسافت","صفر","منفی"], a:2,
+     expl:"جابه‌جایی برداری است از نقطهٔ شروع به نقطهٔ پایان؛ اگر هر دو یکی باشند، جابه‌جایی صفر است."},
+
+    {q:"برای محاسبهٔ مسافت پیموده‌شده در مسیر شکسته، چه باید کرد؟",
+     o:["فقط قطعهٔ اول را حساب کنیم","فقط قطعهٔ آخر","مجموع طول تمام قطعات","تفاضل قطعات"], a:2,
+     expl:"مسافت مجموع طولِ مسیری است که جسم طی کرده، بنابراین باید همهٔ قطعات را جمع کنیم."},
+
+    {q:"جسمی 10 m جلو و 6 m عقب می‌رود. جابه‌جایی آن چقدر است؟",
+     o:["6 m","4 m","10 m","16 m"], a:1,
+     expl:"اگر جهت جلو را مثبت در نظر بگیریم، جابه‌جایی = 10 - 6 = 4 m."},
+
+    {q:"اگر جسم نصف محیط دایره را طی کند، جابه‌جایی چه مقدار است؟",
+     o:["نصف محیط","شعاع","قطر","هیچکدام"], a:2,
+     expl:"دو نقطهٔ مقابل هم روی دایره، فاصلهٔ مستقیمشان برابر قطر دایره است."},
+
+    {q:"در حرکت یکنواخت چه چیزی ثابت است؟",
+     o:["شتاب","سرعت","مکان","زمان"], a:1,
+     expl:"در حرکت یکنواخت اندازهٔ سرعت ثابت است (شتاب صفر)."},
+
+    {q:"شتاب متوسط یک کمیت ... است.",
+     o:["اسکالر","عددی بدون جهت","برداری","واحد ندارد"], a:2,
+     expl:"شتاب برداری است؛ علاوه بر اندازه، جهت نیز دارد."},
+
+    {q:"تندی متوسط چگونه تعریف می‌شود؟",
+     o:["Δr ÷ t","S ÷ t","dv/dt","s × t"], a:1,
+     expl:"تندی متوسط = مسافت پیموده‌شده ÷ زمان."},
+
+    {q:"تندی لحظه‌ای چیست؟",
+     o:["میانگین تندی در یک بازه","تندی در یک لحظهٔ مشخص","مسافت تقسیم بر زمان کل","بردار جابه‌جایی"], a:1,
+     expl:"تندی لحظه‌ای مقدار تندی متحرک در یک لحظهٔ معین است (در دروس پیشرفته مشتق می‌شود، ولی ما آن را با حد تعریف می‌کنیم). "},
+
+    {q:"سرعت متوسط چگونه محاسبه می‌شود؟",
+     o:["S ÷ t","Δr ÷ t","dv/dt","v × t"], a:1,
+     expl:"سرعت متوسط برداری است: Δr (بردار جابه‌جایی) تقسیم بر زمان."},
+
+    {q:"واحد تندی و سرعت در سامانهٔ SI چیست؟",
+     o:["m","m/s","m/s²","s"], a:1,
+     expl:"واحد تندی و سرعت متر بر ثانیه است (m/s). "},
+
+    {q:"واحد شتاب چیست؟",
+     o:["m","m/s","m/s²","s"], a:2,
+     expl:"یکای شتاب از تقسیم یکای سرعت بر یکای زمان به‌دست می‌آید: m/s²."},
+
+    {q:"در حرکت یکنواخت شتاب چقدر است؟",
+     o:["صفر","مثبت","منفی","متغیر"], a:0,
+     expl:"در حرکت یکنواخت سرعت ثابت است؛ بنابراین شتاب صفر است."},
+
+    {q:"معادلهٔ v = v₀ + a t برای چه وضعیتی صحیح است؟",
+     o:["شتاب ثابت","حرکت یکنواخت","حرکت دورانی","هارمونیک"], a:0,
+     expl:"این معادله زمانی درست است که شتاب ثابت باشد."},
+
+    {q:"معادلهٔ s = v₀ t + ½ a t² چه چیزی را نشان می‌دهد؟",
+     o:["شتاب","مکان(جابجایی)","سرعت لحظه‌ای","زمان"], a:1,
+     expl:"این معادله مکان (جابجایی نسبت به مبدأ) را در حرکت با شتاب ثابت می‌دهد."},
+
+    {q:"اگر جسم 120 m را در 2 s طی کند، تندی متوسط چقدر است؟",
+     o:["60 m/s","240 m/s","62 m/s","30 m/s"], a:0,
+     expl:"120 ÷ 2 = 60 m/s."},
+
+    {q:"سطح زیر منحنی v–t نشان‌دهندهٔ چه کمیتی است؟",
+     o:["شتاب","جابجایی","تندی لحظه‌ای","نیرو"], a:1,
+     expl:"مساحت زیر نمودار سرعت-زمان برابر جابه‌جایی است."},
+
+    {q:"اگر مسیر حرکت یک متحرک بر روی خط راست باشد و جهت تغییر نکند، چه رابطه‌ای بین مسافت و جابه‌جایی برقرار است؟",
+     o:["مسافت همیشه کمتر است","مسافت و جابه‌جایی برابرند","جابه‌جایی صفر است","مسافت منفی است"], a:1,
+     expl:"وقتی جهت ثابت است، اندازهٔ بردار جابه‌جایی برابر مسافت پیموده‌شده است."},
+
+    {q:"اگر جسم در دو جهت مخالف حرکت کند، چه کمیتی جهت آن را مشخص می‌کند؟",
+     o:["مسافت","تندی","جابجایی","زمان"], a:2,
+     expl:"جابجایی برداری است که جهت را مشخص می‌کند."},
+
+    {q:"کدام یک دربارهٔ حرکت دایره‌ای درست است؟",
+     o:["جهت سرعت ثابت است","اندازهٔ سرعت حتماً ثابت است","سرعت بردار جهت‌دار و ممکن است جهت تغییر کند","جابه‌جایی همیشه صفر"], a:2,
+     expl:"در حرکت دایره‌ای جهت سرعت دائماً تغییر می‌کند؛ اندازه ممکن است ثابت باشد (حرکت یکنواخت دایره‌ای). "},
+
+    {q:"در حالتی که جسم به مبدأ بازگردد، مسافت چگونه است؟",
+     o:["صفر","همیشه زیاد","ممکن است بزرگ باشد حتی جابه‌جایی صفر باشد","همیشه برابر جابه‌جایی"], a:2,
+     expl:"مسافت مجموع مسیری است که طی شده و ممکن است حتی اگر جابه‌جایی صفر باشد، مقدار بزرگی داشته باشد."},
+
+    {q:"اگر جسمی 3 m شرق و 4 m شمال حرکت کند، اندازهٔ جابه‌جایی چقدر است؟",
+     o:["7 m","5 m","1 m","12 m"], a:1,
+     expl:"فیثاغورس: √(3²+4²)=5 m."},
+
+    {q:"اگر جسمی 5 m جلو سپس 2 m عقب برود، مسافت و جابه‌جایی کدامند؟",
+     o:["مسافت=3، جابه‌جایی=7","مسافت=7، جابه‌جایی=3","مسافت=0، جابه‌جایی=3","مسافت=7، جابه‌جایی=0"], a:1,
+     expl:"مسافت = 5+2=7; جابه‌جایی = 5-2=3."},
+
+    {q:"تندی متوسط یک خودرو که 150 km را در 3 h طی کند، چقدر است؟",
+     o:["45 km/h","50 km/h","60 km/h","30 km/h"], a:0,
+     expl:"150 ÷ 3 = 50 km/h → دقت کن واحدها منطبق باشند؛ (اگر به متر/ثانیه بخواهی تبدیل کن)."},
+
+    {q:"اگر نمودار x–t خطی با شیب مثبت داشته باشیم، این شیب نشان‌دهندهٔ چه چیزی است؟",
+     o:["شتاب","سرعت","جابجایی","زمان"], a:1,
+     expl:"شیب نمودار مکان-زمان برابر سرعت (تندی در جهت) است."},
+
+    {q:"اگر سرعت لحظه‌ای برابر تندی متوسط باشد در چه حرکتی این رخ می‌دهد؟",
+     o:["حرکت شتاب‌دار","حرکت یکنواخت","حرکت تصادفی","حرکت نوسانی"], a:1,
+     expl:"در حرکت یکنواخت (سرعت ثابت) تندی لحظه‌ای در همهٔ لحظات برابر تندی متوسط است."},
+
+    {q:"برای محاسبهٔ سرعت متوسط به چه چیزی نیاز داریم؟",
+     o:["مسافت و زمان","جابجایی و زمان","شتاب و زمان","فقط زمان"], a:1,
+     expl:"سرعت متوسط برداری است که نیاز به جابه‌جایی (Δr) و زمان دارد."},
+
+    {q:"اگر v(t)=3t (m/s)، شتاب چقدر است؟",
+     o:["3 m/s²","t m/s²","0","9 m/s²"], a:0,
+     expl:"شتاب مشتق سرعت نسبت به زمان است: dv/dt = 3."},
+
+    {q:"اگر یک خودرو 60 km در 1 h و سپس 40 km در 1 h طی کند، تندی متوسط کل؟",
+     o:["50 km/h","100 km/h","60 km/h","40 km/h"], a:0,
+     expl:"کل مسافت 100 km، کل زمان 2 h → 50 km/h."},
+
+    {q:"شتاب متوسط چگونه محاسبه می‌شود؟",
+     o:["Δs ÷ Δt","Δv ÷ Δt","v ÷ t","s ÷ t"], a:1,
+     expl:"شتاب متوسط = تغییر سرعت ÷ مدت زمان تغییر (Δv/Δt)."},
+
+    {q:"کدام معادله برای شتاب ثابت درست نیست؟",
+     o:["v = v₀ + a t","s = v₀ t + ½ a t²","v² = v₀² + 2 a s","s = a t² (بدون v₀) همیشه"], a:3,
+     expl:"s = a t² تنها زمانی درست است که v₀ = 0 و ضریب ½ را نادیده گرفته باشیم؛ بنابراین گزینهٔ چهارم کلی و نادرست است."},
+
+    {q:"اگر جسمی در 4 s با سرعت ثابت 2 m/s حرکت کند، چه مسافتی طی شده؟",
+     o:["8 m","2 m","6 m","4 m"], a:0,
+     expl:"s = v×t = 2×4 = 8 m."},
+
+    {q:"اگر سرعت یک جسم از 5 m/s به 1 m/s در 2 s کاهش یابد، شتاب متوسط چقدر است؟",
+     o:["-2 m/s²","2 m/s²","-4 m/s²","4 m/s²"], a:0,
+     expl:"Δv = 1 - 5 = -4; a = -4/2 = -2 m/s²."},
+
+    {q:"اگر نمودار v–t شیب مثبت داشته باشد، چه می‌فهمیم؟",
+     o:["شتاب مثبت","سرعت صفر","مسافت صفر","شتاب منفی"], a:0,
+     expl:"شیب نمودار v–t برابر شتاب است؛ شیب مثبت → شتاب مثبت."},
+
+    {q:"اگر جسم در مسیر یک دایره کامل حرکت کند و به نقطهٔ شروع بازگردد، جابه‌جایی چقدر می‌شود؟",
+     o:["محیط دایره","شعاع","قطر","صفر"], a:3,
+     expl:"پس از یک دور کامل جسم به مبدأ بازمی‌گردد؛ بنابراین جابه‌جایی صفر است."},
+
+    {q:"اگر جسمی 8 m شرق سپس 6 m شرق حرکت کند، جابه‌جایی چیست؟",
+     o:["14 m شرق","2 m شرق","8 m","6 m"], a:0,
+     expl:"جابجایی برداری = 8 + 6 = 14 m به سمت شرق."},
+
+    {q:"مسافت پیموده‌شده در یک مسیر منحنی چگونه محاسبه می‌شود؟",
+     o:["با جمع طول قوس‌ها","با جابه‌جایی","فقط با زمان","با سرعت لحظه‌ای"], a:0,
+     expl:"مسافت در مسیر منحنی برابر مجموع طولِ قوس‌های طی‌شده است."},
+
+    {q:"اگر جابجایی 20 m به سمت شمال و زمان 4 s باشد، سرعت متوسط چقدر است؟",
+     o:["5 m/s شمال","80 m/s","20 m/s","4 m/s"], a:0,
+     expl:"20 ÷ 4 = 5 m/s به سمت شمال."},
+
+    {q:"در حرکت یکنواخت دایره‌ای (اندازهٔ سرعت ثابت) آیا شتاب صفر است؟",
+     o:["خیر، جهت تغییر می‌کند","بله صفر است","بستگی به شعاع دارد","تنها اگر سرعت صفر باشد"], a:0,
+     expl:"شتاب جهت‌دار (شتاب كرة‌مرکزی) وجود دارد زیرا جهت سرعت تغییر می‌کند."},
+
+    {q:"معادلهٔ v² = v₀² + 2 a s چه زمانی کاربرد دارد؟",
+     o:["وقتی زمان معلوم نیست و شتاب ثابت است","وقتی سرعت صفر است","فقط حرکت دایره‌ای","حرکت تصادفی"], a:0,
+     expl:"این معادله برای حرکت با شتاب ثابت و زمانی که t معلوم نیست کاربردی است."},
+
+    {q:"اگر یک متحرک 5 m شرق سپس 5 m غرب حرکت کند، جابه‌جایی چیست؟",
+     o:["10 m","0 m","5 m","-5 m"], a:1,
+     expl:"جابجایی برداری = +5 + (-5) = 0."},
+
+    {q:"تندی متوسط یک جسم با مسافت 30 m و زمان 10 s چقدر است؟",
+     o:["3 m/s","300 m/s","0.33 m/s","10 m/s"], a:0,
+     expl:"30 ÷ 10 = 3 m/s."},
+
+    {q:"اگر در نمودار مکان-زمان خط افقی داشته باشیم، مفهوم آن چیست؟",
+     o:["سکون","شتاب مثبت","سرعت زیاد","جابجایی زیاد"], a:0,
+     expl:"خط افقی یعنی مکان تغییر نمی‌کند → جسم ساکن است."},
+
+    {q:"مسافت در حرکت دایره‌ای با چه چیزی محاسبه می‌شود؟",
+     o:["طول قوس بر حسب زاویه یا محیط","بردار جابه‌جایی","فقط زمان","فشار"], a:0,
+     expl:"طول قوس یا نسبت زاویه به کل محیط معیار محاسبهٔ مسافت در دایره است."},
+
+    {q:"اگر جسم طی 2 بازه زمانی مختلف سرعت‌های متفاوت داشته باشد، برای محاسبهٔ تندی متوسط کل چه باید کرد؟",
+     o:["جمع سرعت‌ها ÷ 2","کل مسافت ÷ کل زمان","جمع جابجایی‌ها","اشتراک زمان‌ها"], a:1,
+     expl:"تندی متوسط = کل مسافت تقسیم بر کل زمان."},
+
+    {q:"در حرکت با شتاب ثابت اگر v₀=0 و a=2 m/s²، پس از 4 s مکان چقدر است؟",
+     o:["16 m","8 m","32 m","4 m"], a:0,
+     expl:"s = v0 t + ½ a t² = 0 + 0.5×2×16 = 16 m."},
+
+    {q:"اگر جسمی 3 m شمال و سپس 4 m شرق حرکت کند، اندازهٔ جابه‌جایی؟",
+     o:["7 m","5 m","1 m","12 m"], a:1,
+     expl:"فیثاغورس: √(3²+4²) = 5 m."},
+
+    {q:"اگر جابجایی یک شی برابر صفر باشد، چه نتیجه‌ای دربارهٔ مسافت می‌توان گرفت؟",
+     o:["مسافت نیز حتماً صفر است","مسافت ممکن است مثبت باشد","مسافت منفی است","مسافت مساوی سرعت است"], a:1,
+     expl:"جابه‌جایی صفر لزوماً به معنی مسافت صفر نیست (مثلاً وقتی جسم دور زده باشد)."},
+
+    {q:"کدام‌یک از موارد زیر دربارهٔ سرعت صحیح است؟",
+     o:["سرعت کمیت اسکالر است","سرعت برداری است و جهت دارد","سرعت همیشه مثبت است","سرعت برابر شتاب است"], a:1,
+     expl:"سرعت برداری است؛ علاوه بر اندازه، جهت نیز دارد."},
+
+    {q:"اگر در نمودار v–t خط افقی داشته باشیم (موازی محور زمان)، معنی آن چیست؟",
+     o:["شتاب صفر (سرعت ثابت)","شتاب مثبت زیاد","تندی لحظه‌ای صفر","جابجایی صفر"], a:0,
+     expl:"خط افقی در نمودار سرعت-زمان یعنی سرعت ثابت → شتاب صفر."},
+
+    {q:"اگر سرعت اولیه 2 m/s و شتاب 3 m/s² باشد، سرعت بعد از 4 s چقدر است؟",
+     o:["14 m/s","12 m/s","10 m/s","8 m/s"], a:0,
+     expl:"v = v0 + a t = 2 + 3×4 = 14 m/s."},
+
+    {q:"اگر جسمی نصف مسیر دایره را طی کند و شعاع دایره 5 m باشد، جابه‌جایی چقدر است؟",
+     o:["π×5 m","10 m","5 m","0"], a:1,
+     expl:"نصف دایره به فاصلهٔ دو نقطهٔ متقابل برابر قطر (2×5 = 10 m) منتهی می‌شود."},
+
+    {q:"در حرکت با شتاب ثابت، v² - v₀² = 2 a s نشان‌دهندهٔ چه چیزی است؟",
+     o:["رابطهٔ بین سرعت‌ها و جابجایی بدون زمان","فرمول فشار","معادلهٔ انرژی","فرمول تندی متوسط"], a:0,
+     expl:"این معادله رابطه‌ای بین سرعت‌ها، شتاب و جابجایی است که زمان در آن نیازی نیست."},
+
+    {q:"اگر یک خودرو 90 km را در 1.5 h طی کند، تندی متوسط آن؟",
+     o:["60 km/h","90 km/h","120 km/h","45 km/h"], a:0,
+     expl:"90 ÷ 1.5 = 60 km/h."},
+
+    {q:"اگر جسمی 4 m شرق، سپس 3 m شمال و سپس 4 m غرب حرکت کند؛ جابه‌جایی نهایی؟",
+     o:["3 m شمال","5 m شمال","–1 m","0"], a:0,
+     expl:"جمع برداری: شرق 4 و غرب 4 خنثی می‌شوند؛ باقی 3 m شمال می‌ماند."},
+
+    {q:"اگر در حرکت، جهت سرعت تغییر کند ولی اندازهٔ سرعت ثابت بماند، شتاب چگونه است؟",
+     o:["صفر","وجود دارد (جهت دارد)","همیشه منفی","همیشه مثبت"], a:1,
+     expl:"تغییر جهت به معنی تغییر برداری سرعت است؛ بنابراین شتاب وجود دارد حتی اگر اندازه ثابت بماند."},
+
+    {q:"اگر جابجایی برابر 12 m و زمان 3 s باشد، سرعت متوسط چقدر است؟",
+     o:["4 m/s","36 m/s","9 m/s","3 m/s"], a:0,
+     expl:"12 ÷ 3 = 4 m/s."},
+
+    {q:"اگر یک جسم در t=0 سرعت v₀ و شتاب a دارد، چه رابطه‌ای مکان را ارائه می‌دهد؟",
+     o:["s = v₀ t","s = v₀ t + ½ a t²","s = a t","s = v₀ + a"], a:1,
+     expl:"در حرکت با شتاب ثابت فرمول کامل مکان s = v₀ t + ½ a t² است."},
+
+    {q:"اگر در حرکت، مسافت 20 m و جابجایی 12 m باشد؛ چه نتیجه‌ای می‌گیریم؟",
+     o:["جهت حرکت ثابت بوده","جهت حرکت تغییر کرده است","جابه‌جایی همیشه بزرگ‌تر است","سرعت صفر است"], a:1,
+     expl:"مسافت بزرگ‌تر از جابجایی نشان می‌دهد که مسیر منحنی یا تغییر جهت داشته است."},
+
+    {q:"اگر نمودار مکان-زمان شیب منفی داشته باشد، به چه معناست؟",
+     o:["حرکت به سمت مبدأ منفی/بردار در جهت منفی","سکون","شتاب مثبت","شتاب منفی"], a:0,
+     expl:"شیب منفی یعنی جسم در حال نزدیک شدن به مبدأ یا حرکت به سمت جهت منفی است."},
+
+    {q:"اگر v₀ = 0, a = 2 m/s² و t = 3 s، سرعت لحظه‌ای در t چقدر است؟",
+     o:["6 m/s","3 m/s","2 m/s","9 m/s"], a:0,
+     expl:"v = v₀ + a t = 0 + 2×3 = 6 m/s."},
+
+    {q:"در حرکت راستا-ثابت، اگر مسیر بازگشتی انجام شود، جابه‌جایی نهایی چیست؟",
+     o:["مقدار کل پیموده شده","ممکن است صفر باشد","همیشه بزرگ است","مساوی زمان"], a:1,
+     expl:"اگر به مبدأ بازگردد، جابه‌جایی صفر است."},
+
+    {q:"اگر در دو بازه زمانی در سرعت‌های متفاوت باشید، برای محاسبهٔ سرعت متوسط موثر باید ...",
+     o:["میانگین سادهٔ سرعت‌ها را بگیریم","کل مسافت ÷ کل زمان را محاسبه کنیم","جمع سرعت‌ها را محاسبه کنیم","سرعت اولیه را استفاده کنیم"], a:1,
+     expl:"تندی متوسط = کل مسافت ÷ کل زمان؛ نه میانگین سادهٔ سرعت‌ها مگر هر بازه زمان برابر باشد."},
+
+    {q:"اگر جسمی در 5 s کلاً مسیر 25 m را طی کند، تندی متوسط چقدر است؟",
+     o:["5 m/s","0.2 m/s","25 m/s","125 m/s"], a:0,
+     expl:"25 ÷ 5 = 5 m/s."},
+
+    {q:"اگر جسمی روی یک مسیر دایره‌ای شعاع 3 m با زاویهٔ π/2 رادیان حرکت کند، طول قوس طی‌شده چقدر است؟",
+     o:["(3π/2) m","(3π/2) نیست","(3×π/2) — محاسبه اشتباه","(3×π/2) درست"], a:0,
+     expl:"طول قوس = r × θ = 3 × (π/2) = 3π/2 m."},
+
+    {q:"اگر جسمی موقعیتی را از x=2 m به x=-3 m تغییر دهد، جابه‌جایی چیست؟",
+     o:["5 m","-5 m","±5 m","3 m"], a:1,
+     expl:"جابجایی = x_final - x_initial = -3 - 2 = -5 m (جهت منفی). "},
+
+    {q:"اگر در حرکت، جابجایی مثبت ولی مسافت بزرگ‌تر باشد، چه نتیجه‌ای می‌توان گرفت؟",
+     o:["مسیر مستقیم بوده","متحرک تغییر جهت داده ولی در کل به سمت مثبت رفته","جابجایی منفی است","وقتی مسافت برابر جابجایی است"], a:1,
+     expl:"مسافت بزرگ‌تر نشان‌دهندهٔ مسیر غیرمستقیم یا تغییر جهت بوده اما حاصل برداری مثبت است."}
+  ]; // QUESTIONS length should be 59
+
+  // اگر تعداد سوال‌ها کمتر از 59 شد، حاشیه‌ای پر می‌کنیم (ایمن‌سازی)
+  while(QUESTIONS.length < 59){
+    QUESTIONS.push({
+      q: `سؤال پشتیبان شماره ${QUESTIONS.length+1}: (تمرینی) این یک سؤال نمونه است.`,
+      o: ["گزینه الف","گزینه ب","گزینه ج","گزینه د"],
+      a: 0,
+      expl: "توضیح نمونه برای سؤالٔ پشتیبان."
+    });
+  }
+
+  // ==== متغیرهای کنترل آزمون ====
+  let order = [];          // ترتیب سؤالات
+  let currentIndex = 0;    // شماره سوال جاری در order
+  let userAnswers = [];    // آرایه‌ای از انتخاب‌های کاربر (index یا null)
+  let started = false;
+  let startTime = null;
+  let timerInterval = null;
+
+  // ==== انتخاب المان‌ها و ایجاد ساختار اولیه ====
+  const quizArea = document.getElementById('quizArea');
+  const startBtn = document.getElementById('startBtn');
+
+  // ایجاد نوار وضعیت و منطقهٔ سوال
+  const statusBar = document.createElement('div');
+  statusBar.style.display = 'flex';
+  statusBar.style.justifyContent = 'space-between';
+  statusBar.style.alignItems = 'center';
+  statusBar.style.margin = '12px 0';
+  statusBar.style.gap = '10px';
+
+  const progressText = document.createElement('div');
+  progressText.textContent = 'سؤال 0 از 0';
+  progressText.style.fontWeight = '700';
+
+  const timerText = document.createElement('div');
+  timerText.textContent = 'زمان: 00:00';
+  timerText.style.fontWeight = '700';
+
+  statusBar.appendChild(progressText);
+  statusBar.appendChild(timerText);
+
+  // منطقه نمایش سوال
+  const qBox = document.createElement('div');
+  qBox.className = 'question-card';
+  qBox.style.display = 'none'; // تا شروع نشود پنهان بماند
+
+  // عناصر داخل qBox
+  const qText = document.createElement('div');
+  qText.className = 'question-text';
+
+  const optsDiv = document.createElement('div');
+  optsDiv.className = 'options';
+
+  const explainDiv = document.createElement('div');
+  explainDiv.className = 'explain';
+
+  // کنترل‌های بعدی/قبلی/پایان
+  const controlsDiv = document.createElement('div');
+  controlsDiv.style.display = 'flex';
+  controlsDiv.style.justifyContent = 'space-between';
+  controlsDiv.style.gap = '8px';
+  controlsDiv.style.marginTop = '12px';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.textContent = '⟵ قبلی';
+  prevBtn.className = 'option';
+  prevBtn.style.width = '32%';
+
+  const nextBtn = document.createElement('button');
+  nextBtn.textContent = 'بعدی ⟶';
+  nextBtn.className = 'option';
+  nextBtn.style.width = '32%';
+
+  const finishBtn = document.createElement('button');
+  finishBtn.textContent = 'پایان آزمون و نمایش نتیجه';
+  finishBtn.className = 'option';
+  finishBtn.style.width = '36%';
+  finishBtn.style.background = '#7c3aed';
+  finishBtn.style.color = 'white';
+
+  controlsDiv.appendChild(prevBtn);
+  controlsDiv.appendChild(nextBtn);
+  controlsDiv.appendChild(finishBtn);
+
+  qBox.appendChild(qText);
+  qBox.appendChild(optsDiv);
+  qBox.appendChild(explainDiv);
+  qBox.appendChild(controlsDiv);
+
+  // ناحیهٔ نتایج نهایی
+  const resultBox = document.createElement('div');
+  resultBox.style.display = 'none';
+  resultBox.style.marginTop = '18px';
+  resultBox.style.padding = '14px';
+  resultBox.style.borderRadius = '12px';
+  resultBox.style.background = '#fff';
+  resultBox.style.boxShadow = '0 0 12px rgba(0,0,0,0.12)';
+
+  // افزودن عناصر به DOM
+  quizArea.appendChild(statusBar);
+  quizArea.appendChild(qBox);
+  quizArea.appendChild(resultBox);
+
+  // ==== توابع کمکی ====
+  function formatTime(seconds){
+    const m = Math.floor(seconds/60).toString().padStart(2,'0');
+    const s = Math.floor(seconds%60).toString().padStart(2,'0');
+    return `${m}:${s}`;
+  }
+
+  function startTimer(){
+    startTime = Date.now();
+    timerInterval = setInterval(()=>{
+      const secs = Math.floor((Date.now() - startTime)/1000);
+      timerText.textContent = 'زمان: ' + formatTime(secs);
+    }, 500);
+  }
+  function stopTimer(){ if(timerInterval) clearInterval(timerInterval); }
+
+  function shuffleArray(arr){
+    for(let i=arr.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // تولید ترتیب سوال‌ها
+  function prepareOrder(){
+    order = QUESTIONS.map((_,i)=>i);
+    order = shuffleArray(order);
+    // می‌خواهیم همهٔ 59 سوال ظاهر شوند؛ اگر خواستی می‌توانی نُه سوال اول را حذف کنی یا تعداد را محدود کنی.
+  }
+
+  // نمایش سوال بر اساس currentIndex (index در آرایه order)
+  function renderCurrent(){
+    const qIdx = order[currentIndex];
+    const item = QUESTIONS[qIdx];
+
+    // به‌روزرسانی متن وضعیت
+    progressText.textContent = `سؤال ${currentIndex+1} از ${order.length}`;
+
+    // نمایش متن سوال
+    qText.innerHTML = `<span style="direction:rtl;">${currentIndex+1}. ${item.q}</span>`;
+
+    // ساخت گزینه‌ها
+    optsDiv.innerHTML = '';
+    item.o.forEach((optText, optI) => {
+      const b = document.createElement('button');
+      b.className = 'option';
+      b.style.textAlign = 'right';
+      b.innerHTML = `<span style="display:inline-block; margin-right:8px; font-weight:800;">${String.fromCharCode(65+optI)}</span> ${optText}`;
+      // رویداد کلیک
+      b.addEventListener('click', () => {
+        // اگر پیشتر جوابی داده شده باشد، غیرقابل تغییر باشد (اما اجازه بدهیم کاربر دوباره تغییر دهد اگر خواست)
+        // اینجا رفتار: انتخاب قفل نمی‌شود تا بازنگری ممکن باشد؛ اما وقتی انتخاب شد، نشان داده و ذخیره می‌شود
+        handleAnswerSelection(qIdx, optI, b);
+      });
+
+      optsDiv.appendChild(b);
+    });
+
+    // نمایش توضیح اگر کاربر قبلاً پاسخ داده
+    explainDiv.style.display = 'none';
+    const prevAns = userAnswers[currentIndex];
+    if(typeof prevAns === 'number'){
+      // نشان دادن وضعیت قبلی: هایلایت گزینهٔ انتخاب شده و نمایش توضیح/صحیح-نادرست
+      Array.from(optsDiv.children).forEach((btn, i) => {
+        btn.disabled = true;
+        if(i === prevAns) {
+          if(prevAns === item.a) btn.classList.add('correct');
+          else btn.classList.add('wrong');
+        }
+        if(i === item.a) btn.classList.add('correct');
+      });
+      explainDiv.style.display = 'block';
+      explainDiv.innerHTML = item.expl;
+    } else {
+      // اگر قبلاً پاسخی ثبت نشده، فعال‌سازی همهٔ دکمه‌ها
+      Array.from(optsDiv.children).forEach(b=>{ b.disabled = false; b.classList.remove('correct','wrong'); });
+      explainDiv.style.display = 'none';
+      explainDiv.innerHTML = '';
+    }
+
+    // وضعیت دکمه‌ها (prev/next)
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex === order.length - 1;
+  }
+
+  // پردازش انتخاب کاربر
+  function handleAnswerSelection(questionGlobalIdx, optI, btnElement){
+    const qLocal = currentIndex; // index در order
+    userAnswers[qLocal] = optI;  // ذخیره انتخاب برای سوال جاری
+
+    // هایلایت تمامی دکمه‌ها و قفل کردن آنها
+    Array.from(optsDiv.children).forEach((b, i) => {
+      b.disabled = true;
+      b.classList.remove('correct','wrong');
+      if(i === QUESTIONS[questionGlobalIdx].a) b.classList.add('correct');
+    });
+
+    // اگر پاسخ اشتباه بود گزینهٔ انتخاب‌شده را قرمز می‌کنیم
+    if(optI !== QUESTIONS[questionGlobalIdx].a){
+      btnElement.classList.add('wrong');
+    } else {
+      btnElement.classList.add('correct');
+    }
+
+    // نمایش توضیح
+    explainDiv.style.display = 'block';
+    explainDiv.innerHTML = QUESTIONS[questionGlobalIdx].expl;
+  }
+
+  // محاسبهٔ نمره کلی
+  function computeScore(){
+    let correct = 0;
+    for(let i=0;i<order.length;i++){
+      const ans = userAnswers[i];
+      const qIdx = order[i];
+      if(typeof ans === 'number' && ans === QUESTIONS[qIdx].a) correct++;
+    }
+    return { correct, total: order.length, percent: (correct/order.length*100).toFixed(1) };
+  }
+
+  // نمایش نتیجهٔ نهایی
+  function showResult(){
+    stopTimer();
+    const score = computeScore();
+    resultBox.style.display = 'block';
+    resultBox.innerHTML = `
+      <h2>نتیجهٔ آزمون</h2>
+      <p><b>تعداد پاسخ‌های درست:</b> ${score.correct} از ${score.total}</p>
+      <p><b>درصد:</b> ${score.percent}%</p>
+      <p><b>زمان صرف‌شده:</b> ${timerText.textContent.replace('زمان: ','')}</p>
+      <div style="margin-top:12px;">
+        <button id="reviewBtn" class="option" style="width:100%;">بازنگری سؤالات (مشاهدهٔ تمام سؤالات و توضیحات)</button>
+      </div>
+    `;
+
+    // ذخیرهٔ نتیجه در localStorage (نام‌گذاری با تاریخ)
+    try{
+      const history = JSON.parse(localStorage.getItem('physics_quiz_history_v1') || '[]');
+      history.push({
+        date: (new Date()).toISOString(),
+        correct: score.correct,
+        total: score.total,
+        percent: score.percent,
+        time: timerText.textContent.replace('زمان: ','')
+      });
+      localStorage.setItem('physics_quiz_history_v1', JSON.stringify(history));
+    }catch(e){
+      console.warn('خطا در ذخیرهٔ نتیجه:', e);
+    }
+
+    // دکمهٔ بازنگری
+    document.getElementById('reviewBtn').addEventListener('click', ()=>{
+      // بازگرداندن نمایش همهٔ سوالات (در حالت مرور: نشان دادن تمام سوالات و توضیحات)
+      renderAllQuestionsForReview();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  // بازنمایی همهٔ سوالات برای مرور نهایی
+  function renderAllQuestionsForReview(){
+    // پاکسازی
+    qBox.style.display = 'none';
+    statusBar.style.display = 'none';
+    resultBox.style.display = 'none';
+    quizArea.innerHTML = ''; // پاک می‌کنیم همه را
+    const reviewTitle = document.createElement('h2');
+    reviewTitle.textContent = 'بازنگری کامل سوالات — توضیحات و پاسخ‌ها';
+    quizArea.appendChild(reviewTitle);
+
+    order.forEach((qIdx, idx) => {
+      const item = QUESTIONS[qIdx];
+      const container = document.createElement('div');
+      container.className = 'question-card';
+      container.style.marginBottom = '12px';
+
+      const qt = document.createElement('div'); qt.className='question-text';
+      qt.innerHTML = `${idx+1}. ${item.q}`;
+
+      const ol = document.createElement('div');
+      item.o.forEach((optText, j) => {
+        const ob = document.createElement('div');
+        ob.className = 'option';
+        ob.style.cursor = 'default';
+        if(j === item.a) ob.classList.add('correct');
+        ob.innerHTML = `<strong>${String.fromCharCode(65+j)}.</strong> ${optText}`;
+        ol.appendChild(ob);
+      });
+
+      const ex = document.createElement('div');
+      ex.className = 'explain';
+      ex.style.display = 'block';
+      ex.innerHTML = `<b>توضیح:</b> ${item.expl}`;
+
+      container.appendChild(qt);
+      container.appendChild(ol);
+      container.appendChild(ex);
+      quizArea.appendChild(container);
+    });
+
+    // دکمهٔ بازگشت به صفحهٔ اصلی آزمون (ریست)
+    const backBtn = document.createElement('button');
+    backBtn.textContent = 'بازگشت و اجرای مجدد آزمون';
+    backBtn.className = 'option';
+    backBtn.style.marginTop = '18px';
+    backBtn.style.width = '100%';
+    backBtn.addEventListener('click', ()=> location.reload());
+    quizArea.appendChild(backBtn);
+  }
+
+  // ==== رویدادها برای کنترل‌ها ====
+  prevBtn.addEventListener('click', ()=>{
+    if(currentIndex > 0){
+      currentIndex--;
+      renderCurrent();
+      window.scrollTo({ top: qBox.offsetTop - 10, behavior: 'smooth' });
+    }
+  });
+
+  nextBtn.addEventListener('click', ()=>{
+    if(currentIndex < order.length -1){
+      currentIndex++;
+      renderCurrent();
+      window.scrollTo({ top: qBox.offsetTop - 10, behavior: 'smooth' });
+    }
+  });
+
+  finishBtn.addEventListener('click', ()=>{
+    // تایید قبل از پایان
+    const confirmEnd = confirm('آیا از پایان آزمون و مشاهدهٔ نتیجه اطمینان دارید؟ (پس از پایان می‌توانید بازنگری کنید)');
+    if(confirmEnd){
+      showResult();
+    }
+  });
+
+  // ==== شروع آزمون ====
+  startBtn.addEventListener('click', ()=>{
+    if(started) return;
+    started = true;
+    prepareOrder();
+    userAnswers = new Array(order.length).fill(null);
+    currentIndex = 0;
+    startBtn.style.display = 'none';
+    qBox.style.display = 'block';
+    statusBar.style.display = 'flex';
+    quizArea.insertBefore(statusBar, qBox);
+    startTimer();
+    renderCurrent();
+  });
+
+  // زمانی که صفحه بارگذاری شد، statusBar را به طور اولیه اضافه کن (اما مخفی باشه تا شروع)
+  statusBar.style.display = 'none';
+
+  // ==== گزینهٔ اختیاری: بارگزاری نتیجه‌ها یا ادامه از جایی که مانده ====
+  // اگر بخواهی می‌توان اینجا کدی افزود که اگر localStorage پاسخ‌ها را داشت، کاربر را پرسیده
+  // که آیا ادامه دهد یا آزمون جدید شروع کند. من در این نسخه پایه‌ای نگه داشتم.
+
+  // پایان IIFE
+})();

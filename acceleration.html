@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>شتاب — آزمایشگاه حرکت</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="page-header">
+  <a class="back" href="index.html">⟵ بازگشت</a>
+  <h1>شتاب</h1>
+</header>
+
+<main class="card single">
+  <h2>تعریف</h2>
+  <p>شتاب متوسط یک متحرک نسبتِ تغییر سرعت متحرک به زمان صرف شده است.</p>
+  <p>برای محاسبهٔ شتاب متوسط دو چیز را باید بدانیم:</p>
+  <ol>
+    <li>تغییرات سرعت (برداری؛ اندازه و جهت)</li>
+    <li>مدت زمان تغییر سرعت (Δt)</li>
+  </ol>
+
+  <h3>یکا</h3>
+  <p>یکای شتاب از تقسیم یکای سرعت بر یکای زمان به دست می‌آید: <strong>متر بر مربع ثانیه (m/s²)</strong></p>
+
+  <h3>فرمول</h3>
+  <p><code>a_{avg} = \dfrac{\Delta v}{\Delta t}</code></p>
+
+  <h3>معادلات حرکت (شتاب ثابت)</h3>
+  <ul>
+    <li><code>v = v_0 + a t</code></li>
+    <li><code>s = v_0 t + \tfrac{1}{2} a t^2</code></li>
+    <li><code>v^2 = v_0^2 + 2 a s</code></li>
+  </ul>
+
+  <h3>مثال تعاملی — راکت</h3>
+  <div class="stage" id="rocket-stage"></div>
+  <div class="controls">
+    <label>شتاب (m/s²): <input id="acc-slider" type="range" min="0.2" max="3" step="0.1" value="0.6"></label>
+    <button id="acc-start" class="btn">شروع</button>
+    <button id="acc-stop" class="btn ghost">توقف</button>
+  </div>
+
+</main>
+
+<script src="scripts.js"></script>
+</body>
+</html>

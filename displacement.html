@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>جابه‌جایی — آزمایشگاه حرکت</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="page-header">
+  <a class="back" href="index.html">⟵ بازگشت</a>
+  <h1>جابه‌جایی (بردار)</h1>
+</header>
+
+<main class="card single">
+  <h2>تعریف جابه‌جایی</h2>
+  <p>
+    جابجایی کمیتی برداری است که بیانگر فاصلهٔ مستقیم بین مبدا و مقصد حرکت است. جابجایی همانند مسافت از جنس طول است و یکای اصلی اندازه‌گیری آن متر است.
+  </p>
+  <p>
+    یادآوری: کوتاه‌ترین فاصله یا مسیر بین دو نقطه پاره‌خط راستی است که آن دو نقطه را به یکدیگر وصل می‌کند؛ اگر پاره‌خطی دارای جهت باشد به آن بردار گفته می‌شود. در صورتی که بخواهیم بردار جابه‌جایی را بیان کنیم، علاوه بر طول باید به جهت آن نیز اشاره کنیم.
+  </p>
+
+  <h3>فرمول</h3>
+  <p>در دو بعد: <code>|\mathbf{r}| = \sqrt{(\Delta x)^2 + (\Delta y)^2}</code></p>
+
+  <h3>مثال تعاملی — رسم بردار</h3>
+  <div class="stage" id="vec-stage"></div>
+  <label>Δx: <input id="vec-x" type="number" value="3" style="width:80px"></label>
+  <label>Δy: <input id="vec-y" type="number" value="4" style="width:80px"></label>
+  <button id="vec-draw" class="btn">رسم و محاسبه</button>
+  <div id="vec-answer" class="answer">اندازهٔ بردار: 5 m</div>
+</main>
+
+<script src="scripts.js"></script>
+</body>
+</html>

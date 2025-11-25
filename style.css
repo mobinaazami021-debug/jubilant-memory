@@ -1,0 +1,75 @@
+/* style.css — تم شاد و واکنش‌گرا برای پروژهٔ physics */
+:root{
+  --bg1:#ff6ec7; --bg2:#7c3aed; --card:#ffffff;
+  --accent:#00d1b2; --muted:#666;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;padding:0;font-family: "Vazirmatn", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; direction:rtl; background: linear-gradient(135deg,var(--bg1),var(--bg2)); color:#081028;}
+a{color:inherit;text-decoration:none}
+
+/* header */
+.header{
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(6px);
+  padding:18px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border-bottom: 3px solid rgba(255,255,255,0.08);
+}
+.header .left { text-align:right; }
+.header h1{margin:0;color:#fff;font-size:20px}
+.header .meta{color:#fff;opacity:0.95;font-weight:700}
+
+/* container for pages */
+.container{max-width:1024px;margin:18px auto;padding:18px;background:var(--card);border-radius:14px;box-shadow:0 18px 60px rgba(0,0,0,0.18);}
+
+/* nav */
+.top-nav{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:14px}
+.top-nav a{background:#fff;padding:8px 12px;border-radius:10px;font-weight:800;box-shadow:0 8px 20px rgba(0,0,0,0.06)}
+
+/* cards */
+.card{background:#fff;padding:14px;border-radius:12px;margin-bottom:12px;box-shadow:0 8px 20px rgba(0,0,0,0.06)}
+.card h2{margin-top:0;color:var(--bg2)}
+
+/* stage (for animations) */
+.stage{height:220px;border-radius:10px;background:linear-gradient(180deg,#fff,#f3fcff);position:relative;overflow:hidden;border:1px solid rgba(0,0,0,0.04)}
+.stage-small{height:140px}
+
+/* actors */
+.runner,.car,.rocket{position:absolute;left:-140px;bottom:8px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.12);transform:translateZ(0)}
+.runner{width:56px;height:56px;background:linear-gradient(180deg,#ff8a8a,#ff3b3b);border-radius:50%}
+.car{width:140px;height:60px;border-radius:14px;background:linear-gradient(90deg,#8be9ff,#7effc7)}
+.rocket{width:46px;height:100px;border-radius:10px;background:linear-gradient(180deg,#ffd24d,#ff6b1f);left:20px}
+
+/* controls */
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.controls label{background:rgba(255,255,255,0.9);padding:8px;border-radius:8px;font-weight:700}
+input[type=range]{width:160px}
+.btn{padding:10px 14px;border-radius:10px;border:none;background:var(--bg2);color:#fff;cursor:pointer;font-weight:800}
+.btn.ghost{background:transparent;border:2px solid rgba(0,0,0,0.06);color:var(--bg2)}
+
+/* forms & quiz */
+label.inline{display:inline-block;margin:6px 8px;font-weight:700}
+input[type=text],input[type=number]{padding:8px;border-radius:8px;border:1px solid #ddd;width:140px}
+.answer{display:none;margin-top:12px;padding:10px;border-radius:8px;background:#eafff1;border-left:5px solid #05a34d;font-weight:700}
+.explain{display:none;margin-top:12px;padding:10px;border-radius:8px;background:#fffbe6;border-right:6px solid #ffb300;font-weight:700}
+
+/* quiz styles */
+.quiz-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.quiz-area{margin-top:12px}
+.question-card{background:linear-gradient(180deg,#fff,#f7fcff);padding:14px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.06)}
+.option{padding:10px;border-radius:10px;margin-top:8px;border:1px solid #e6f7ff;cursor:pointer;background:#fff}
+.option.correct{background:#b6f7c3;border-color:#0a8c00}
+.option.wrong{background:#ffbdbd;border-color:#8c0a0a}
+
+/* notes */
+.notes ol{padding-left:18px}
+
+/* responsive */
+@media(max-width:720px){
+  .header{flex-direction:column;gap:8px;text-align:center}
+  .stage{height:140px}
+}
