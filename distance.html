@@ -1,50 +1,43 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>مسافت — آزمایشگاه حرکت</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>مسافت — آزمایشگاه حرکت</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="page-header">
-  <a class="back" href="index.html">⟵ بازگشت</a>
-  <h1>مسافت</h1>
-</header>
-
-<main class="card single">
-  <h2>مقدمه</h2>
-  <p>هر حرکتی دارای یک شروع و یک پایان است و برای رسیدن از نقطهٔ شروع به پایان مسیرهای مختلفی وجود دارد.</p>
-
-  <h3>تعریف «مسافت پیموده شده»</h3>
-  <p>
-    به مجموعهٔ طول‌هایی که یک متحرک برای رفتن از مبدا به مقصد می‌پیماید <strong>مسافت پیموده شده</strong> می‌گوییم. برای سادگی معمولاً به جای «مسافت پیموده شده» به تنهایی از واژهٔ <strong>مسافت</strong> استفاده می‌کنیم.
-    مسافت از جنس <strong>طول</strong> است و یکای اصلی اندازه‌گیری آن <strong>متر</strong> می‌باشد. مسافت را معمولاً با حرف <strong>S</strong> نشان می‌دهیم.
-  </p>
-
-  <h3>فرمول (تندی متوسط مرتبط)</h3>
-  <p><code>v_{avg} = S / t</code> (تندی متوسط برابر است با مسافت تقسیم بر زمان)</p>
-
-  <h3>مثال تعاملی</h3>
-  <div class="stage" id="distance-stage">
-    <!-- runner animated (div) -->
-    <div id="runner" class="runner"></div>
+  <div class="header">
+    <div class="left"><h1>مسافت</h1></div>
   </div>
 
-  <div class="controls">
-    <label>سرعت نمایشی: <input id="run-speed" type="range" min="0.6" max="3" step="0.1" value="1.4"></label>
-    <button id="run-start" class="btn">شروع</button>
-    <button id="run-stop" class="btn ghost">توقف</button>
+  <div class="container">
+    <a href="index.html" class="top-nav">⟵ بازگشت</a>
+
+    <div class="card">
+      <h2>تعریف مسافت</h2>
+      <p>هر حرکتی دارای یک شروع و یک پایان است و برای رسیدن از نقطهٔ شروع به پایان مسیرهای مختلفی وجود دارد. <strong>مسافت</strong> به مجموعهٔ طول‌هایی می‌گوییم که یک متحرک برای رفتن از مبدا به مقصد می‌پیماید. یکای اصلی متر (m) است.</p>
+
+      <h3>مثال تعاملی</h3>
+      <div id="distance-stage" class="stage"></div>
+      <div class="controls">
+        <label>سرعت نمایشی: <input id="run-speed" type="range" min="0.6" max="3" step="0.1" value="1.2"></label>
+        <button id="run-start" class="btn">شروع</button>
+        <button id="run-stop" class="btn ghost">توقف</button>
+      </div>
+
+      <h3>تمرین سریع</h3>
+      <p>متحرک ۵ متر جلو می‌رود سپس ۲ متر به عقب بازمی‌گردد. مقدار مسافت و جابه‌جایی را وارد کن.</p>
+      <div>
+        <label class="inline">مسافت: <input id="dist-s" type="number" placeholder="مثلاً 7"></label>
+        <label class="inline">جابه‌جایی: <input id="dist-d" type="number" placeholder="مثلاً 3"></label>
+        <button id="dist-check" class="btn">بررسی</button>
+      </div>
+      <div id="dist-result" class="answer"></div>
+
+    </div>
   </div>
 
-  <h3>تمرین</h3>
-  <p>دونده ۵ متر جلو و ۲ متر عقب می‌رود.</p>
-  <label>مسافت: <input id="dist-s" style="width:80px"></label>
-  <label>جابه‌جایی: <input id="dist-d" style="width:80px"></label>
-  <button id="dist-check" class="btn">بررسی</button>
-  <div id="dist-result" class="answer">پاسخ: مسافت = 7 m ، جابه‌جایی = 3 m</div>
-</main>
-
-<script src="scripts.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
